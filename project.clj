@@ -1,5 +1,5 @@
 (defproject clj-chunk-buffer "0.1.0"
-  :description "a write memory buffer base on chunk and TTL"
+  :description "a write memory buffer base on chunk and TTL "
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]])
