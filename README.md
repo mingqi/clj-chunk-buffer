@@ -52,7 +52,7 @@ Write data to buffer by `(write buffer data)`, and the data writed to buffer mus
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013
 
 Distributed under the Eclipse Public License, the same as Clojure.
 
