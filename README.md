@@ -1,6 +1,6 @@
 # clj-chunk-buffer
 
-a write memory buffer base on chunk and TTL.
+a output memory buffer base on size limitation and TTL.
 
 ## Introduce
 The chunk buffer usually can be used to output buffer for file system, storage or remote data writing. 
