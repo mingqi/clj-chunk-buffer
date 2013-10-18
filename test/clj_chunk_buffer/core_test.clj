@@ -109,6 +109,6 @@
 
 (defn -main [ & args]
   ;(test-periodic-job)
-  ;(test-consumer-job)
-  (test-concurrence)
+  (test-consumer-job)
+  ;(test-concurrence)
   )

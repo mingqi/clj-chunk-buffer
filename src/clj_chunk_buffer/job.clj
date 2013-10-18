@@ -17,8 +17,10 @@
         (dotimes [_ worker-num]
           (.start (Thread.
                    #(while (not @termination-signal) 
-                      (if-let [chunk (. blocking-queue (poll 1 TimeUnit/SECONDS))]
-                        (worker-fn chunk)))))))
+                      (try
+                        (if-let [chunk (. blocking-queue (poll 1 TimeUnit/SECONDS))]
+                          (worker-fn chunk))
+                        (catch Exception e)))))))
       
       (stop [job]
         (reset! termination-signal true))

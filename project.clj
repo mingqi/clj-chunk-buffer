@@ -1,4 +1,4 @@
-(defproject clj-chunk-buffer "0.1.0"
+(defproject clj-chunk-buffer "0.2.0"
   :description "a write memory buffer base on chunk and TTL "
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
