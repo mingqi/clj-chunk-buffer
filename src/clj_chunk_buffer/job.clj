@@ -20,7 +20,7 @@
                       (try
                         (if-let [chunk (. blocking-queue (poll 1 TimeUnit/SECONDS))]
                           (worker-fn chunk))
-                        (catch Exception e)))))))
+                        (catch Exception e (log/warn e)) ))))))
       
       (stop [job]
         (reset! termination-signal true))
@@ -37,7 +37,10 @@
           (reset! _future
                   (.scheduleWithFixedDelay
                    es
-                   run-fn
+                   (fn []
+                      (try 
+                        (run-fn)
+                        (catch Exception e (log/warn e)))),
                    0,
                    interval-sec
                    TimeUnit/SECONDS))

@@ -27,6 +27,7 @@
 ;;;;;; Buffer ;;;;;;
 (defprotocol ChunkBuffer
   (write [this key data] "put data into buffer")
+  (stat [this])
   (close [this] "stop buffer, stop accept data and force Workers to clean up all pending chunks"))
 
 (defn mk-chunk-buffer
@@ -45,7 +46,7 @@
            collector-job (atom nil)]
        
        (letfn [(collect-chunk! [key]
-                 ;; (log/debug "trying to collect chunk, key is" key ", queue size is" (.size chunks-queue))
+                 (log/debug "trying to collect chunk, key is" key ", queue size is" (.size chunks-queue))
                  (let [chunk (@chunks-map key)]
                          (when (and chunk
                                     (> (:size chunk) 0))
@@ -53,7 +54,7 @@
                              (do
                                (swap! chunks-map dissoc key)
                                chunk)
-                             (log/warn "queue is full, can't collect chunk, key is" key))
+                             (log/warn "buffer queue is full, can't collect chunk, key is" key))
                            )))
 
                (write-chunk! [key data]
@@ -61,9 +62,18 @@
                  (@chunks-map key))
 
                (collect-old-chunks! []
+                 (log/info "buffer stat: " (buffer-stat)) 
                  (doseq [chunk (vals @chunks-map)]
                    (when (>= (- (epoch) (:created-epoch-sec chunk)) (:chunk-age opts))
                      (collect-chunk! (:key chunk)))))
+
+               (buffer-stat []
+                 {:map {:count (count @chunks-map)
+                        :size (reduce #(+ %1 (:size %2)) 0 (vals @chunks-map))},
+                  :queue {:length (.size chunks-queue)
+                          :size (reduce  #(+ %1 (:size %2)) 0 (seq chunks-queue))},
+                  }
+                 )
                ]
 
          ;;; start daemon jobs
@@ -77,6 +87,9 @@
                             (job/new-periodic-job 1 collect-old-chunks!)))
 
          (reify ChunkBuffer
+           (stat [this]
+              (buffer-stat))
+
            (write [this key data]
              (locking this
                (let [chunk (or (@chunks-map key) (mk-chunk key))]
